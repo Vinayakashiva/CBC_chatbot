@@ -282,12 +282,71 @@
     return msg;
   }
 
+  function isAmbiguousHeadQuestion(text) {
+    const q = String(text || "").toLowerCase().replace(/[?!.]+$/g, "").trim();
+
+    // Ask for clarification instead of guessing a department/committee head.
+    // Examples: "who is the head?", "who is head of this?", "who is the head of this event?"
+    const asksWho = /\b(who|which)\b/.test(q);
+    const asksHead = /\b(head|co[- ]?head)\b/.test(q);
+    const hasSpecificRole = /\b(technical|stage|creative|social media|hospitality|registration|discipline|logistics|convener|co[- ]?convener|treasurer)\b/.test(q);
+
+    return asksWho && asksHead && !hasSpecificRole;
+  }
+
+  const headRoles = [
+    ["Technical Head", "Who is the Technical Head?"],
+    ["Stage Head", "Who is the Stage Head?"],
+    ["Creative Head", "Who is the Creative Head?"],
+    ["Social Media Head", "Who is the Social Media Head?"],
+    ["Hospitality Head", "Who is the Hospitality Head?"],
+    ["Registration Head", "Who is the Registration Head?"],
+    ["Discipline Head", "Who is the Discipline Head?"],
+    ["Logistics Head", "Who is the Logistics Head?"]
+  ];
+
+  function addHeadClarification() {
+    const msg = document.createElement("div");
+    msg.className = "msg msg--bot";
+
+    const meta = document.createElement("div");
+    meta.className = "msg__meta";
+    meta.textContent = `CBC 2.0 Assistant · ${nowLabel()}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = "msg__bubble head-clarification";
+    bubble.innerHTML = `
+      <p class="answer-paragraph"><strong>Which head are you looking for?</strong></p>
+      <p class="answer-paragraph">There are several committee heads in CBC 2.0. Please choose one:</p>
+      <div class="head-options" aria-label="Committee head options"></div>`;
+
+    const options = bubble.querySelector(".head-options");
+    headRoles.forEach(([label, query]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "head-option";
+      button.textContent = label;
+      button.addEventListener("click", () => sendMessage(query));
+      options.appendChild(button);
+    });
+
+    msg.append(meta, bubble);
+    thread.appendChild(msg);
+    scrollToEnd();
+  }
+
   async function sendMessage(rawText) {
     const text = String(rawText || "").trim();
     if (!text) return;
 
     showChatView();
     addMessage(text, "user");
+
+    if (isAmbiguousHeadQuestion(text)) {
+      addHeadClarification();
+      return;
+    }
+
     const typing = addTypingIndicator();
 
     try {
