@@ -23,9 +23,9 @@
 
   let hasChatted = false;
 
-  // ============================================================
-  // GREETING
-  // ============================================================
+  /* ============================================================
+     GREETING
+     ============================================================ */
 
   function setGreeting() {
     const hour = new Date().getHours();
@@ -54,12 +54,13 @@
 
   setGreeting();
 
-  // Update greeting automatically every minute
-  setInterval(setGreeting, 60 * 1000);
+  // Update the greeting every minute.
+  setInterval(setGreeting, 60_000);
 
-  // ============================================================
-  // THEME
-  // ============================================================
+
+  /* ============================================================
+     THEME
+     ============================================================ */
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
@@ -79,7 +80,8 @@
           ? "Switch to light theme"
           : "Switch to dark theme";
 
-      themeToggle.textContent = theme === "dark" ? "☀" : "◐";
+      themeToggle.textContent =
+        theme === "dark" ? "☀" : "◐";
     }
   }
 
@@ -87,18 +89,20 @@
 
   applyTheme(savedTheme === "dark" ? "dark" : "light");
 
-  // ============================================================
-  // SIDEBAR
-  // ============================================================
+
+  /* ============================================================
+     SIDEBAR
+     ============================================================ */
 
   function openSidebar() {
     if (!app) return;
 
     app.classList.add("sidebar-open");
 
-    if (sidebarToggle) {
-      sidebarToggle.setAttribute("aria-expanded", "true");
-    }
+    sidebarToggle?.setAttribute(
+      "aria-expanded",
+      "true"
+    );
   }
 
   function closeSidebar() {
@@ -106,21 +110,31 @@
 
     app.classList.remove("sidebar-open");
 
-    if (sidebarToggle) {
-      sidebarToggle.setAttribute("aria-expanded", "false");
-    }
+    sidebarToggle?.setAttribute(
+      "aria-expanded",
+      "false"
+    );
   }
 
-  // ============================================================
-  // VIEW MANAGEMENT
-  // ============================================================
+
+  /* ============================================================
+     VIEW MANAGEMENT
+     ============================================================ */
 
   function showWelcomeView() {
     hasChatted = false;
 
-    if (welcomeView) welcomeView.hidden = false;
-    if (chatView) chatView.hidden = true;
-    if (composerBottom) composerBottom.hidden = true;
+    if (welcomeView) {
+      welcomeView.hidden = false;
+    }
+
+    if (chatView) {
+      chatView.hidden = true;
+    }
+
+    if (composerBottom) {
+      composerBottom.hidden = true;
+    }
 
     if (thread) {
       thread.innerHTML = "";
@@ -128,24 +142,25 @@
 
     if (inputWelcome) {
       inputWelcome.value = "";
-      setGreeting();
-
-      setTimeout(() => {
-        inputWelcome.focus();
-      }, 50);
     }
+
+    if (inputBottom) {
+      inputBottom.value = "";
+    }
+
+    setGreeting();
 
     document
       .querySelectorAll(".nav-item")
       .forEach((el) => el.classList.remove("is-active"));
 
-    const homeButton = document.querySelector(
-      '.nav-item[data-action="home"]'
-    );
+    document
+      .querySelector('.nav-item[data-action="home"]')
+      ?.classList.add("is-active");
 
-    if (homeButton) {
-      homeButton.classList.add("is-active");
-    }
+    setTimeout(() => {
+      inputWelcome?.focus();
+    }, 50);
   }
 
   function showChatView() {
@@ -153,28 +168,40 @@
 
     hasChatted = true;
 
-    if (welcomeView) welcomeView.hidden = true;
-    if (chatView) chatView.hidden = false;
-    if (composerBottom) composerBottom.hidden = false;
+    if (welcomeView) {
+      welcomeView.hidden = true;
+    }
+
+    if (chatView) {
+      chatView.hidden = false;
+    }
+
+    if (composerBottom) {
+      composerBottom.hidden = false;
+    }
 
     setTimeout(() => {
-      if (inputBottom) {
-        inputBottom.focus();
-      }
+      inputBottom?.focus();
     }, 50);
   }
 
+
+  /* ============================================================
+     SCROLL
+     ============================================================ */
+
   function scrollToEnd() {
     requestAnimationFrame(() => {
-      if (chatView) {
-        chatView.scrollTop = chatView.scrollHeight;
-      }
+      if (!chatView) return;
+
+      chatView.scrollTop = chatView.scrollHeight;
     });
   }
 
-  // ============================================================
-  // HTML SAFETY
-  // ============================================================
+
+  /* ============================================================
+     HTML SAFETY
+     ============================================================ */
 
   function escapeHtml(value) {
     return String(value)
@@ -187,36 +214,46 @@
 
   function safeUrl(rawUrl) {
     try {
-      const url = new URL(rawUrl, window.location.origin);
+      const url = new URL(
+        rawUrl,
+        window.location.origin
+      );
 
-      if (!["http:", "https:"].includes(url.protocol)) {
+      if (
+        url.protocol !== "http:" &&
+        url.protocol !== "https:"
+      ) {
         return null;
       }
 
       return url.href;
+
     } catch {
       return null;
     }
   }
 
-  // ============================================================
-  // LINK HANDLING
-  // ============================================================
+
+  /* ============================================================
+     LINKS
+     ============================================================ */
 
   function linkifyEscaped(line) {
-    // ----------------------------------------------------------
-    // Markdown links
-    // Example:
-    // [Official Website](https://example.com)
-    // ----------------------------------------------------------
+
+    /*
+     * Markdown links
+     * Example:
+     * [Official Website](https://example.com)
+     */
 
     line = line.replace(
       /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-      (_, label, url) => {
+      function (_, label, url) {
+
         const safe = safeUrl(url);
 
         if (!safe) {
-          return `${escapeHtml(label)} (${escapeHtml(url)})`;
+          return `${label} (${escapeHtml(url)})`;
         }
 
         return `
@@ -224,7 +261,6 @@
             href="${escapeHtml(safe)}"
             target="_blank"
             rel="noopener noreferrer"
-            class="chat-link"
           >
             ${escapeHtml(label)}
           </a>
@@ -232,19 +268,28 @@
       }
     );
 
-    // ----------------------------------------------------------
-    // Plain URLs
-    // ----------------------------------------------------------
+
+    /*
+     * Normal URLs
+     */
 
     line = line.replace(
       /(^|[\s(])((?:https?:\/\/|www\.)[^\s<)]+)/g,
-      (match, prefix, raw) => {
-        const cleaned = raw.replace(/[.,!?;:]+$/, "");
-        const trailing = raw.slice(cleaned.length);
+      function (match, prefix, raw) {
 
-        const normalized = cleaned.startsWith("www.")
-          ? `https://${cleaned}`
-          : cleaned;
+        const cleaned = raw.replace(
+          /[.,!?;:]+$/,
+          ""
+        );
+
+        const trailing = raw.slice(
+          cleaned.length
+        );
+
+        const normalized =
+          cleaned.startsWith("www.")
+            ? `https://${cleaned}`
+            : cleaned;
 
         const safe = safeUrl(normalized);
 
@@ -252,105 +297,139 @@
           return match;
         }
 
-        return `
-          ${prefix}
-          <a
-            href="${escapeHtml(safe)}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="chat-link"
-          >
-            ${escapeHtml(cleaned)}
-          </a>
-          ${escapeHtml(trailing)}
-        `;
+        return (
+          `${prefix}` +
+          `<a href="${escapeHtml(safe)}" ` +
+          `target="_blank" ` +
+          `rel="noopener noreferrer">` +
+          `${escapeHtml(cleaned)}` +
+          `</a>` +
+          `${escapeHtml(trailing)}`
+        );
       }
     );
 
     return line;
   }
 
-  // ============================================================
-  // COMMON LABEL FORMATTING
-  // ============================================================
+
+  /* ============================================================
+     LABEL FORMATTING
+     ============================================================ */
 
   function formatLabels(line) {
+
+    const labels = [
+      "Student Status",
+      "Verification",
+      "Team Size",
+      "Leadership & Roster",
+      "Exclusivity",
+      "Identity Proof",
+      "Registration",
+      "Eligibility",
+      "Date",
+      "Venue",
+      "Location",
+      "Address",
+      "Contact",
+      "Phone",
+      "Email",
+      "Website",
+      "Official Website",
+      "Rules",
+      "Guidelines",
+      "Prize",
+      "Prizes",
+      "Submission",
+      "Judging",
+      "Timing",
+      "Schedule"
+    ];
+
+    const escapedLabels = labels
+      .map((label) =>
+        label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      )
+      .join("|");
+
+    const regex = new RegExp(
+      `\\b(${escapedLabels})\\s*:`,
+      "gi"
+    );
+
     return line.replace(
-      /\b(
-        Student Status|
-        Verification|
-        Team Size|
-        Leadership & Roster|
-        Exclusivity|
-        Identity Proof|
-        Registration|
-        Eligibility|
-        Date|
-        Dates|
-        Time|
-        Venue|
-        Location|
-        Address|
-        Contact|
-        Phone|
-        Email|
-        Website|
-        Official Website|
-        Prize|
-        Prizes|
-        Fee|
-        Fees|
-        Deadline|
-        Organizer|
-        Head|
-        Co-Head
-      )\s*:/gi,
-      (label) => {
-        return `<strong>${escapeHtml(
-          label.replace(/:$/, "")
-        )}:</strong>`;
-      }
+      regex,
+      (label) =>
+        `<strong>${escapeHtml(label)}</strong>`
     );
   }
 
-  // ============================================================
-  // RICH ANSWER RENDERER
-  // ============================================================
+
+  /* ============================================================
+     LONG ANSWER STRUCTURING
+     ============================================================ */
 
   function renderRichText(text) {
+
     let source = String(text ?? "")
       .replace(/\r\n?/g, "\n")
       .trim();
 
     if (!source) {
       return `
-        <div class="answer-content">
-          <p class="answer-paragraph">
-            No answer available.
-          </p>
+        <div class="answer-paragraph">
+          No answer available.
         </div>
       `;
     }
 
-    // ----------------------------------------------------------
-    // Restore structure when PDF / knowledge text is flattened
-    // ----------------------------------------------------------
 
-    source = source
-      .replace(/\s*•\s*/g, "\n• ")
-      .replace(
-        /\s+(?=(\d+)\s+[A-Z][A-Za-z0-9&/()'’\- ]{2,90}\s+•)/g,
-        "\n"
-      )
-      .replace(/\s+(?=(#{1,3})\s+)/g, "\n");
+    /*
+     * Restore bullets from flattened PDF text.
+     */
+
+    source = source.replace(
+      /\s*•\s*/g,
+      "\n• "
+    );
+
+
+    /*
+     * Restore numbered sections.
+     *
+     * Example:
+     *
+     * 1 Eligibility & Team Formation • Student Status
+     * 2 Registration & Identification • Identity Proof
+     */
+
+    source = source.replace(
+      /\s+(?=(\d+)\s+[A-Z][A-Za-z0-9&/()'’\- ]{2,90}\s+•)/g,
+      "\n"
+    );
+
+
+    /*
+     * Restore markdown-style headings.
+     */
+
+    source = source.replace(
+      /\s+(?=#{1,3}\s+)/g,
+      "\n"
+    );
+
 
     const lines = source
       .split("\n")
       .map((line) => line.trim());
 
+
     let html = "";
 
+
     for (let i = 0; i < lines.length; i++) {
+
       const raw = lines[i];
 
       if (!raw) {
@@ -363,13 +442,21 @@
         continue;
       }
 
-      // --------------------------------------------------------
-      // Markdown headings
-      // --------------------------------------------------------
 
-      const mdHeading = raw.match(/^#{1,3}\s+(.+)$/);
+      /*
+       * Markdown headings
+       *
+       * # Title
+       * ## Title
+       * ### Title
+       */
+
+      const mdHeading = raw.match(
+        /^#{1,3}\s+(.+)$/
+      );
 
       if (mdHeading) {
+
         html += `
           <h3 class="answer-section-title">
             ${linkifyEscaped(
@@ -381,11 +468,13 @@
         continue;
       }
 
-      // --------------------------------------------------------
-      // Numbered section
-      //
-      // 1 Eligibility & Team Formation
-      // --------------------------------------------------------
+
+      /*
+       * Numbered section
+       *
+       * 1 Eligibility & Team Formation
+       * 2 Registration & Identification
+       */
 
       const numberedSection = raw.match(
         /^(\d+)\s+(.+?)(?:\s+•\s*(.*))?$/
@@ -396,50 +485,73 @@
         numberedSection[2].length <= 100 &&
         /^[A-Z]/.test(numberedSection[2])
       ) {
-        html += `<section class="answer-section">`;
 
         html += `
-          <h3 class="answer-section-title">
-            <span class="answer-section-number">
-              ${escapeHtml(numberedSection[1])}
-            </span>
-            ${linkifyEscaped(
-              escapeHtml(numberedSection[2])
-            )}
-          </h3>
+          <section class="answer-section">
+
+            <h3 class="answer-section-title">
+
+              <span class="answer-section-number">
+                ${escapeHtml(numberedSection[1])}
+              </span>
+
+              ${linkifyEscaped(
+                escapeHtml(numberedSection[2])
+              )}
+
+            </h3>
         `;
 
+
         if (numberedSection[3]) {
-          const bulletText = numberedSection[3].trim();
+
+          const bulletText =
+            numberedSection[3].trim();
 
           html += `
             <div class="answer-bullet">
-              ${formatLabels(
-                linkifyEscaped(
-                  escapeHtml(bulletText)
-                )
-              )}
+
+              <span class="answer-bullet-dot">
+                •
+              </span>
+
+              <span>
+                ${formatLabels(
+                  linkifyEscaped(
+                    escapeHtml(bulletText)
+                  )
+                )}
+              </span>
+
             </div>
           `;
         }
 
-        html += `</section>`;
+
+        html += `
+          </section>
+        `;
 
         continue;
       }
 
-      // --------------------------------------------------------
-      // Bullet points
-      // --------------------------------------------------------
+
+      /*
+       * Bullet item
+       */
 
       const bullet = raw.match(
         /^[•●▪◦\-*]\s+(.+)$/
       );
 
       if (bullet) {
+
         html += `
           <div class="answer-bullet">
-            <span class="answer-bullet-dot">•</span>
+
+            <span class="answer-bullet-dot">
+              •
+            </span>
 
             <span>
               ${formatLabels(
@@ -448,32 +560,39 @@
                 )
               )}
             </span>
+
           </div>
         `;
 
         continue;
       }
 
-      // --------------------------------------------------------
-      // Numbered items
-      // --------------------------------------------------------
+
+      /*
+       * Normal numbered item
+       */
 
       const numberedItem = raw.match(
         /^(\d+)[.)]\s+(.+)$/
       );
 
       if (numberedItem) {
+
         html += `
           <div class="answer-numbered">
 
             <span class="answer-number-badge">
-              ${escapeHtml(numberedItem[1])}
+              ${escapeHtml(
+                numberedItem[1]
+              )}
             </span>
 
             <span>
               ${formatLabels(
                 linkifyEscaped(
-                  escapeHtml(numberedItem[2])
+                  escapeHtml(
+                    numberedItem[2]
+                  )
                 )
               )}
             </span>
@@ -484,27 +603,34 @@
         continue;
       }
 
-      // --------------------------------------------------------
-      // Reference line
-      // --------------------------------------------------------
 
-      if (/^(Ref|Reference)\s*:/i.test(raw)) {
+      /*
+       * Reference
+       */
+
+      if (
+        /^(Ref|Reference)\s*:/i.test(raw)
+      ) {
+
         html += `
           <div class="answer-reference">
+
             ${formatLabels(
               linkifyEscaped(
                 escapeHtml(raw)
               )
             )}
+
           </div>
         `;
 
         continue;
       }
 
-      // --------------------------------------------------------
-      // Normal paragraph
-      // --------------------------------------------------------
+
+      /*
+       * Normal paragraph
+       */
 
       html += `
         <p class="answer-paragraph">
@@ -517,6 +643,7 @@
       `;
     }
 
+
     return `
       <div class="answer-content">
         ${html}
@@ -524,55 +651,79 @@
     `;
   }
 
-  // ============================================================
-  // LINK EXTRACTION
-  // ============================================================
+
+  /* ============================================================
+     LINK EXTRACTION
+     ============================================================ */
 
   function extractLinks(text) {
-    const links = [];
 
-    // Markdown URLs
-    const markdown =
-      /\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g;
+    const links = [];
 
     let match;
 
+
+    /*
+     * Markdown links
+     */
+
+    const markdown =
+      /\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g;
+
     while ((match = markdown.exec(text))) {
+
       if (!links.includes(match[1])) {
         links.push(match[1]);
       }
     }
 
-    // Plain URLs
+
+    /*
+     * Normal URLs
+     */
+
     const bare =
       /(https?:\/\/[^\s<>"')\]]+)/g;
 
     while ((match = bare.exec(text))) {
+
       if (!links.includes(match[1])) {
         links.push(match[1]);
       }
     }
 
+
     return links;
   }
 
-  // ============================================================
-  // GOOGLE MAPS
-  // ============================================================
+
+  /* ============================================================
+     MAPS URL
+     ============================================================ */
 
   function mapsUrlFromAnswer(text) {
-    const direct = extractLinks(text).find((url) =>
-      /(?:google\.[^/]+\/maps|maps\.app\.goo\.gl)/i.test(url)
-    );
+
+    const direct =
+      extractLinks(text).find(
+        (url) =>
+          /(?:google\.[^/]+\/maps|maps\.app\.goo\.gl)/i.test(
+            url
+          )
+      );
 
     if (direct) {
       return direct;
     }
 
-    // Try to find:
-    // Venue: Global Academy of Technology
-    // Location: Bengaluru
-    // Address: ...
+
+    /*
+     * Try to find:
+     *
+     * Venue: Global Academy of Technology
+     * Location: Bengaluru
+     * Address: ...
+     */
+
     const match = text.match(
       /(?:venue|location|address)\s*[:\-]\s*([^\n]+)/i
     );
@@ -581,116 +732,175 @@
       return null;
     }
 
+
     const location = match[1]
-      .replace(/https?:\/\/[^\s]+/g, "")
-      .replace(/[|,;]+$/, "")
+      .replace(
+        /https?:\/\/[^\s]+/g,
+        ""
+      )
+      .replace(
+        /[|,;]+$/,
+        ""
+      )
       .trim();
+
 
     if (location.length < 4) {
       return null;
     }
 
+
     return (
-      "https://www.google.com/maps/search/?api=1&query=" +
+      "https://www.google.com/maps/search/" +
+      "?api=1&query=" +
       encodeURIComponent(location)
     );
   }
 
-  // ============================================================
-  // ACTION BUTTONS
-  // ============================================================
+
+  /* ============================================================
+     LINK ACTION BUTTONS
+     ============================================================ */
 
   function addActionButtons(container, text) {
+
     const links = extractLinks(text);
 
-    const mapsUrl = mapsUrlFromAnswer(text);
+    const mapsUrl =
+      mapsUrlFromAnswer(text);
 
     const unique = [];
 
+
     links.forEach((url) => {
+
       if (!unique.includes(url)) {
         unique.push(url);
       }
+
     });
 
-    if (mapsUrl && !unique.includes(mapsUrl)) {
+
+    if (
+      mapsUrl &&
+      !unique.includes(mapsUrl)
+    ) {
       unique.push(mapsUrl);
     }
+
 
     if (!unique.length) {
       return;
     }
 
+
     const actions =
       document.createElement("div");
 
-    actions.className = "msg__actions";
+    actions.className =
+      "msg__actions";
 
-    unique.slice(0, 4).forEach((url) => {
-      const safe = safeUrl(url);
 
-      if (!safe) {
-        return;
-      }
+    unique
+      .slice(0, 4)
+      .forEach((url) => {
 
-      const link =
-        document.createElement("a");
+        const safe = safeUrl(url);
 
-      link.className = "link-button";
+        if (!safe) return;
 
-      link.href = safe;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
 
-      const isMap =
-        /(?:maps|google\.[^/]+\/maps)/i.test(
-          url
-        );
+        const a =
+          document.createElement("a");
 
-      link.textContent = isMap
-        ? "⌖ Open in Maps"
-        : "↗ Open website";
+        a.className =
+          "link-button";
 
-      actions.appendChild(link);
-    });
+        a.href = safe;
+
+        a.target = "_blank";
+
+        a.rel =
+          "noopener noreferrer";
+
+
+        const isMap =
+          /(?:maps|google\.[^/]+\/maps)/i.test(
+            url
+          );
+
+
+        a.textContent =
+          isMap
+            ? "⌖ Open in Maps"
+            : "↗ Open website";
+
+
+        actions.appendChild(a);
+
+      });
+
 
     container.appendChild(actions);
   }
 
-  // ============================================================
-  // ADD MESSAGE
-  // ============================================================
+
+  /* ============================================================
+     CHAT MESSAGE
+     ============================================================ */
 
   function addMessage(text, who) {
+
     const msg =
       document.createElement("div");
 
-    msg.className = `msg msg--${who}`;
+    msg.className =
+      `msg msg--${who}`;
+
 
     const meta =
       document.createElement("div");
 
-    meta.className = "msg__meta";
+    meta.className =
+      "msg__meta";
+
 
     meta.textContent =
       who === "bot"
         ? `CBC 2.0 Assistant · ${nowLabel()}`
         : `You · ${nowLabel()}`;
 
+
     const bubble =
       document.createElement("div");
 
-    bubble.className = "msg__bubble";
+    bubble.className =
+      "msg__bubble";
+
+
+    /*
+     * IMPORTANT:
+     * Use innerHTML here because renderRichText()
+     * converts links and structures long answers.
+     */
 
     bubble.innerHTML =
       renderRichText(text);
 
-    msg.appendChild(meta);
-    msg.appendChild(bubble);
+
+    msg.append(
+      meta,
+      bubble
+    );
+
 
     if (who === "bot") {
-      addActionButtons(bubble, text);
+      addActionButtons(
+        bubble,
+        text
+      );
     }
+
 
     thread.appendChild(msg);
 
@@ -699,16 +909,19 @@
     return msg;
   }
 
-  // ============================================================
-  // TYPING INDICATOR
-  // ============================================================
+
+  /* ============================================================
+     TYPING INDICATOR
+     ============================================================ */
 
   function addTypingIndicator() {
+
     const msg =
       document.createElement("div");
 
     msg.className =
       "msg msg--bot msg--typing";
+
 
     msg.innerHTML = `
       <div class="msg__meta">
@@ -724,6 +937,7 @@
       </div>
     `;
 
+
     thread.appendChild(msg);
 
     scrollToEnd();
@@ -731,159 +945,182 @@
     return msg;
   }
 
-  // ============================================================
-  // HEAD CLARIFICATION
-  // ============================================================
-  //
-  // IMPORTANT:
-  //
-  // "head"
-  // "who is the head"
-  // "who is head"
-  // "head of this"
-  // "who is the head of this"
-  //
-  // should NOT automatically become Technical Head.
-  //
-  // But:
-  //
-  // "who is the technical head"
-  // "registration head"
-  //
-  // should go to the backend directly.
-  //
-  // ============================================================
+
+  /* ============================================================
+     AMBIGUOUS HEAD DETECTION
+     ============================================================ */
 
   function isAmbiguousHeadQuestion(text) {
-    const q = String(text || "")
-      .toLowerCase()
-      .replace(/[?!.]+$/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
+
+    const q =
+      String(text || "")
+        .toLowerCase()
+        .replace(/[?!.]+$/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
 
     if (!q) {
       return false;
     }
 
-    // ----------------------------------------------------------
-    // Specific committee roles
-    // ----------------------------------------------------------
 
-    const specificRole =
-      /\b(
-        technical\s+head|
-        stage\s+head|
-        creative\s+head|
-        social\s+media\s+head|
-        hospitality\s+head|
-        registration\s+head|
-        discipline\s+head|
-        logistics\s+head|
-        technical|
-        stage|
-        creative|
-        social\s+media|
-        hospitality|
-        registration|
-        discipline|
-        logistics|
-        convener|
-        co[- ]?convener|
-        treasurer
-      )\b/ix.test(q);
+    /*
+     * IMPORTANT:
+     *
+     * These are SPECIFIC roles.
+     * If one of these is mentioned,
+     * allow the backend to answer normally.
+     */
 
-    // If a specific role exists,
-    // do not ask for clarification.
-    if (specificRole) {
-      return false;
-    }
+    const specificRolePatterns = [
 
-    // ----------------------------------------------------------
-    // Generic head questions
-    // ----------------------------------------------------------
+      /\btechnical\s+head\b/,
+      /\bstage\s+head\b/,
+      /\bcreative\s+head\b/,
+      /\bsocial\s+media\s+head\b/,
+      /\bhospitality\s+head\b/,
+      /\bregistration\s+head\b/,
+      /\bdiscipline\s+head\b/,
+      /\blogistics\s+head\b/,
+
+      /\btechnical\b/,
+      /\bstage\b/,
+      /\bcreative\b/,
+      /\bsocial\s+media\b/,
+      /\bhospitality\b/,
+      /\bregistration\b/,
+      /\bdiscipline\b/,
+      /\blogistics\b/,
+
+      /\bconvener\b/,
+      /\bco[- ]?convener\b/,
+      /\btreasurer\b/
+
+    ];
+
+
+    const hasSpecificRole =
+      specificRolePatterns.some(
+        (pattern) =>
+          pattern.test(q)
+      );
+
+
+    /*
+     * GENERIC HEAD QUESTIONS
+     *
+     * These must NOT be sent to the backend
+     * because the backend may guess one head.
+     *
+     * Examples:
+     *
+     * "head"
+     * "who is head"
+     * "who is the head"
+     * "who is the head of this"
+     * "head of this"
+     * "head of this event"
+     * "who is the co-head"
+     */
 
     const genericHeadQuestion =
-      q === "head" ||
 
-      q === "the head" ||
+      q === "head" ||
 
       q === "co-head" ||
 
       q === "co head" ||
 
-      q === "the co-head" ||
+      /\bwho\s+is\s+(the\s+)?(head|co[- ]?head)\b/.test(q) ||
 
-      q === "the co head" ||
+      /\b(which\s+)?(head|co[- ]?head)\b/.test(q) ||
 
-      /\bwho\s+is\s+(the\s+)?head\b/.test(q) ||
+      /\b(head|co[- ]?head)\s+(of|for)\s+(this|this\s+event|the\s+event|cbc\s*2\.?0)\b/.test(q) ||
 
-      /\bwho\s+is\s+(the\s+)?co[- ]?head\b/.test(q) ||
+      /^head\s+of\s+(this|the\s+event|cbc\s*2\.?0)\b/.test(q) ||
 
-      /\bwhich\s+head\b/.test(q) ||
+      /^who\s+is\s+the\s+head\s+of\s+this\b/.test(q);
 
-      /\bhead\s+of\s+(this|this\s+event|the\s+event|cbc\s*2\.?0)\b/.test(q) ||
 
-      /\bco[- ]?head\s+of\s+(this|this\s+event|the\s+event|cbc\s*2\.?0)\b/.test(q) ||
-
-      /\bwho\s+is\s+the\s+head\s+of\s+this\b/.test(q) ||
-
-      /\bwho\s+is\s+the\s+head\s+of\s+this\s+event\b/.test(q);
-
-    return genericHeadQuestion;
+    return (
+      genericHeadQuestion &&
+      !hasSpecificRole
+    );
   }
 
-  // ============================================================
-  // HEAD OPTIONS
-  // ============================================================
+
+  /* ============================================================
+     HEAD ROLES
+     ============================================================ */
 
   const headRoles = [
+
     [
       "Technical Head",
       "Who is the Technical Head?"
     ],
+
     [
       "Stage Head",
       "Who is the Stage Head?"
     ],
+
     [
       "Creative Head",
       "Who is the Creative Head?"
     ],
+
     [
       "Social Media Head",
       "Who is the Social Media Head?"
     ],
+
     [
       "Hospitality Head",
       "Who is the Hospitality Head?"
     ],
+
     [
       "Registration Head",
       "Who is the Registration Head?"
     ],
+
     [
       "Discipline Head",
       "Who is the Discipline Head?"
     ],
+
     [
       "Logistics Head",
       "Who is the Logistics Head?"
     ]
+
   ];
 
+
+  /* ============================================================
+     HEAD CLARIFICATION MESSAGE
+     ============================================================ */
+
   function addHeadClarification() {
+
     const msg =
       document.createElement("div");
 
-    msg.className = "msg msg--bot";
+    msg.className =
+      "msg msg--bot";
+
 
     const meta =
       document.createElement("div");
 
-    meta.className = "msg__meta";
+    meta.className =
+      "msg__meta";
 
     meta.textContent =
       `CBC 2.0 Assistant · ${nowLabel()}`;
+
 
     const bubble =
       document.createElement("div");
@@ -891,20 +1128,17 @@
     bubble.className =
       "msg__bubble head-clarification";
 
+
     bubble.innerHTML = `
       <p class="answer-paragraph">
-
         <strong>
           Which head are you looking for?
         </strong>
-
       </p>
 
       <p class="answer-paragraph">
-
         There are several committee heads in CBC 2.0.
-        Please select the one you want to know about.
-
+        Please choose one:
       </p>
 
       <div
@@ -913,92 +1147,145 @@
       ></div>
     `;
 
+
     const options =
-      bubble.querySelector(".head-options");
-
-    headRoles.forEach(([label, query]) => {
-      const button =
-        document.createElement("button");
-
-      button.type = "button";
-
-      button.className =
-        "head-option";
-
-      button.textContent = label;
-
-      button.addEventListener(
-        "click",
-        () => {
-          sendMessage(query);
-        }
+      bubble.querySelector(
+        ".head-options"
       );
 
-      options.appendChild(button);
-    });
 
-    msg.appendChild(meta);
-    msg.appendChild(bubble);
+    headRoles.forEach(
+      ([label, query]) => {
+
+        const button =
+          document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+          "head-option";
+
+        button.textContent =
+          label;
+
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            sendMessage(query);
+
+          }
+        );
+
+
+        options.appendChild(button);
+
+      }
+    );
+
+
+    msg.append(
+      meta,
+      bubble
+    );
+
 
     thread.appendChild(msg);
 
     scrollToEnd();
   }
 
-  // ============================================================
-  // SEND MESSAGE
-  // ============================================================
+
+  /* ============================================================
+     SEND MESSAGE
+     ============================================================ */
 
   async function sendMessage(rawText) {
+
     const text =
-      String(rawText || "").trim();
+      String(rawText || "")
+        .trim();
+
 
     if (!text) {
       return;
     }
 
+
     showChatView();
 
-    addMessage(text, "user");
+    addMessage(
+      text,
+      "user"
+    );
 
-    // ----------------------------------------------------------
-    // IMPORTANT:
-    // Check ambiguous "head" questions BEFORE backend call.
-    // ----------------------------------------------------------
 
-    if (isAmbiguousHeadQuestion(text)) {
+    /*
+     * CHECK FIRST
+     *
+     * This MUST happen BEFORE /api/chat.
+     *
+     * Therefore:
+     *
+     * User: "head"
+     *
+     * will NOT reach the backend.
+     *
+     * Instead, the assistant asks:
+     *
+     * "Which head are you looking for?"
+     */
+
+    if (
+      isAmbiguousHeadQuestion(text)
+    ) {
+
       addHeadClarification();
+
       return;
     }
+
 
     const typing =
       addTypingIndicator();
 
+
     try {
+
       const res =
-        await fetch("/api/chat", {
-          method: "POST",
+        await fetch(
+          "/api/chat",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-          body: JSON.stringify({
-            message: text
-          })
-        });
+            body: JSON.stringify({
+              message: text
+            })
+          }
+        );
+
 
       if (!res.ok) {
+
         throw new Error(
           `HTTP ${res.status}`
         );
+
       }
+
 
       const data =
         await res.json();
 
+
       typing.remove();
+
 
       addMessage(
         data.answer ||
@@ -1006,13 +1293,17 @@
         "bot"
       );
 
+
     } catch (error) {
+
       typing.remove();
+
 
       addMessage(
         "I couldn't reach the assistant server right now. Please try again in a moment.",
         "bot"
       );
+
 
       console.error(
         "CBC 2.0 chat error:",
@@ -1021,194 +1312,222 @@
     }
   }
 
-  // ============================================================
-  // SIDEBAR EVENTS
-  // ============================================================
 
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener(
-      "click",
-      () => {
-        if (
-          app.classList.contains(
-            "sidebar-open"
-          )
-        ) {
-          closeSidebar();
-        } else {
-          openSidebar();
-        }
+  /* ============================================================
+     SIDEBAR EVENTS
+     ============================================================ */
+
+  sidebarToggle?.addEventListener(
+    "click",
+    () => {
+
+      app.classList.contains(
+        "sidebar-open"
+      )
+        ? closeSidebar()
+        : openSidebar();
+
+    }
+  );
+
+
+  sidebarOverlay?.addEventListener(
+    "click",
+    closeSidebar
+  );
+
+
+  /* ============================================================
+     THEME BUTTON
+     ============================================================ */
+
+  themeToggle?.addEventListener(
+    "click",
+    () => {
+
+      const next =
+        document.documentElement.dataset.theme ===
+        "dark"
+          ? "light"
+          : "dark";
+
+
+      applyTheme(next);
+
+    }
+  );
+
+
+  /* ============================================================
+     NEW CHAT
+     ============================================================ */
+
+  newChatBtn?.addEventListener(
+    "click",
+    () => {
+
+      showWelcomeView();
+
+      closeSidebar();
+
+    }
+  );
+
+
+  /* ============================================================
+     WELCOME COMPOSER
+     ============================================================ */
+
+  composerWelcome?.addEventListener(
+    "submit",
+    (e) => {
+
+      e.preventDefault();
+
+
+      const text =
+        inputWelcome.value.trim();
+
+
+      if (!text) {
+        return;
       }
-    );
-  }
 
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener(
-      "click",
-      closeSidebar
-    );
-  }
 
-  // ============================================================
-  // THEME TOGGLE
-  // ============================================================
+      inputWelcome.value = "";
 
-  if (themeToggle) {
-    themeToggle.addEventListener(
-      "click",
-      () => {
-        const next =
-          document.documentElement
-            .dataset.theme === "dark"
-            ? "light"
-            : "dark";
 
-        applyTheme(next);
+      sendMessage(text);
+
+    }
+  );
+
+
+  /* ============================================================
+     BOTTOM COMPOSER
+     ============================================================ */
+
+  composerBottom?.addEventListener(
+    "submit",
+    (e) => {
+
+      e.preventDefault();
+
+
+      const text =
+        inputBottom.value.trim();
+
+
+      if (!text) {
+        return;
       }
-    );
-  }
 
-  // ============================================================
-  // NEW CHAT
-  // ============================================================
 
-  if (newChatBtn) {
-    newChatBtn.addEventListener(
-      "click",
-      () => {
-        showWelcomeView();
-        closeSidebar();
+      inputBottom.value = "";
+
+
+      sendMessage(text);
+
+    }
+  );
+
+
+  /* ============================================================
+     SIDEBAR NAVIGATION
+     ============================================================ */
+
+  sidebarNav?.addEventListener(
+    "click",
+    (e) => {
+
+      const btn =
+        e.target.closest(
+          ".nav-item"
+        );
+
+
+      if (!btn) {
+        return;
       }
-    );
-  }
 
-  // ============================================================
-  // WELCOME COMPOSER
-  // ============================================================
 
-  if (composerWelcome) {
-    composerWelcome.addEventListener(
-      "submit",
-      (e) => {
-        e.preventDefault();
-
-        const text =
-          inputWelcome.value.trim();
-
-        if (!text) {
-          return;
-        }
-
-        inputWelcome.value = "";
-
-        sendMessage(text);
-      }
-    );
-  }
-
-  // ============================================================
-  // BOTTOM COMPOSER
-  // ============================================================
-
-  if (composerBottom) {
-    composerBottom.addEventListener(
-      "submit",
-      (e) => {
-        e.preventDefault();
-
-        const text =
-          inputBottom.value.trim();
-
-        if (!text) {
-          return;
-        }
-
-        inputBottom.value = "";
-
-        sendMessage(text);
-      }
-    );
-  }
-
-  // ============================================================
-  // SIDEBAR NAVIGATION
-  // ============================================================
-
-  if (sidebarNav) {
-    sidebarNav.addEventListener(
-      "click",
-      (e) => {
-        const btn =
-          e.target.closest(
-            ".nav-item"
-          );
-
-        if (!btn) {
-          return;
-        }
-
-        document
-          .querySelectorAll(".nav-item")
-          .forEach((el) =>
+      document
+        .querySelectorAll(
+          ".nav-item"
+        )
+        .forEach(
+          (el) =>
             el.classList.remove(
               "is-active"
             )
-          );
-
-        btn.classList.add(
-          "is-active"
         );
 
-        if (
-          btn.dataset.action ===
-          "home"
-        ) {
-          showWelcomeView();
-        } else if (
+
+      btn.classList.add(
+        "is-active"
+      );
+
+
+      if (
+        btn.dataset.action === "home"
+      ) {
+
+        showWelcomeView();
+
+      } else if (
+        btn.dataset.query
+      ) {
+
+        sendMessage(
           btn.dataset.query
-        ) {
-          sendMessage(
-            btn.dataset.query
-          );
-        }
+        );
 
-        if (
-          window.innerWidth <= 900
-        ) {
-          closeSidebar();
-        }
       }
-    );
-  }
 
-  // ============================================================
-  // QUICK ACTIONS
-  // ============================================================
 
-  if (quickActions) {
-    quickActions.addEventListener(
-      "click",
-      (e) => {
-        const btn =
-          e.target.closest(
-            ".quick-chip"
-          );
+      if (
+        window.innerWidth <= 900
+      ) {
 
-        if (
-          btn &&
+        closeSidebar();
+
+      }
+
+    }
+  );
+
+
+  /* ============================================================
+     QUICK ACTIONS
+     ============================================================ */
+
+  quickActions?.addEventListener(
+    "click",
+    (e) => {
+
+      const btn =
+        e.target.closest(
+          ".quick-chip"
+        );
+
+
+      if (
+        btn?.dataset.query
+      ) {
+
+        sendMessage(
           btn.dataset.query
-        ) {
-          sendMessage(
-            btn.dataset.query
-          );
-        }
-      }
-    );
-  }
+        );
 
-  // ============================================================
-  // INITIAL FOCUS
-  // ============================================================
+      }
+
+    }
+  );
+
+
+  /* ============================================================
+     INITIAL FOCUS
+     ============================================================ */
 
   if (inputWelcome) {
     inputWelcome.focus();
