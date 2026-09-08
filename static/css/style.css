@@ -313,3 +313,35 @@ button { color: inherit; }
 
 @keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes blink { 0%,80%,100% { opacity: .25; } 40% { opacity: 1; } }
+
+/* Clarification buttons for ambiguous committee-head questions */
+.head-clarification .answer-paragraph {
+  margin: 0 0 8px;
+}
+.head-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.head-option {
+  appearance: none;
+  border: 1px solid var(--border, #d8d3c8);
+  background: var(--surface-2, #f0ede5);
+  color: var(--text, #151515);
+  border-radius: 999px;
+  padding: 9px 13px;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+.head-option:hover {
+  transform: translateY(-1px);
+  border-color: currentColor;
+}
+html[data-theme="dark"] .head-option {
+  background: #1d1d1a;
+  border-color: #3b3a35;
+  color: #f5f2ea;
+}
