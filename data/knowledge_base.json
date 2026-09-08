@@ -1,0 +1,140 @@
+{
+  "event": {
+    "name": "Code Breaker Challenge 2.0",
+    "short_name": "CBC 2.0",
+    "department": "Department of Artificial Intelligence & Machine Learning",
+    "college": "Global Academy of Technology (Autonomous)",
+    "approval": "Approved by AICTE, New Delhi. Affiliated to VTU.",
+    "address": "Ideal Homes Township, Rajarajeshwari Nagar, Bengaluru - 560098",
+    "dates": "10th - 11th October 2026",
+    "venue": "Global Academy of Technology",
+    "registration_fee": "₹1500/- per team",
+    "team_size": "2 to 4 members per team",
+    "cash_pool": "₹60,000 (60K) total prize pool, with additional certificate and internship opportunities",
+    "collaboration": "Dyashin (Innovate. Collaborate. Accelerate.)",
+    "supporting_bodies": [
+      "IEEE Bangalore Section",
+      "IEEE Computer Society Bangalore Chapter",
+      "Institution's Innovation Council",
+      "CTFL Codes",
+      "Altron AIML"
+    ],
+    "website": "https://cbc-2-xv2u.vercel.app/",
+    "instagram": "gatbengaluru",
+    "facebook": "GlobalAcademyOfTech",
+    "registration_mode": "Scan the QR code on the official poster to register, or contact the registration team directly."
+  },
+  "contacts": [
+    {"name": "Vinayaka S", "role": "Registration Head / Point of Contact", "phone": "7022656317"},
+    {"name": "Bhuvan AR", "role": "Co-Convenor / Point of Contact", "phone": "8317462097"},
+    {"name": "Ravikumar G", "role": "Co-Convenor / Point of Contact", "phone": "9008788111"}
+  ],
+  "committee": [
+    {"position": "Convenor", "name": " Niyathi Nagesh"},
+    {"position": "Co-Convenor", "name": " Bhuvan A R"},
+    {"position": "Co-Convenor", "name": " Ravi Kumar G"},
+    {"position": "Treasurer", "name": " Yashaswini S"},
+    {"position": "Technical Head", "name": " Prajwal T Raj"},
+    {"position": "Technical Co-Head", "name": " Chethan Ponnappa A"},
+    {"position": "Stage Head", "name": " Janavi H B"},
+    {"position": "Stage Co-Head", "name": " Namratha B A"},
+    {"position": "Creative Head", "name": " Riya Vinod"},
+    {"position": "Social Media Head", "name": " Samrudh H T"},
+    {"position": "Creative & Social Media Co-Head", "name": " Pratheeksha R"},
+    {"position": "Hospitality Head", "name": " Mythri Mehendarkar R"},
+    {"position": "Hospitality Co-Head", "name": " Laasya S D"},
+    {"position": "Registration Head", "name": " Vinayaka S"},
+    {"position": "Discipline Head", "name": " ashavantha M S"},
+    {"position": "Logistics Head", "name": " S Maha Skanda"}
+  ],
+  "faqs": [
+    {
+      "questions": [
+        "what is code breaker challenge",
+        "what is cbc 2.0",
+        "tell me about the event",
+        "what is this event about"
+      ],
+      "answer": "Code Breaker Challenge 2.0 (CBC 2.0) is a technical event organized by the Department of Artificial Intelligence & Machine Learning at Global Academy of Technology, in collaboration with Dyashin, and supported by IEEE Bangalore Section, IEEE Computer Society Bangalore Chapter, the Institution's Innovation Council, CTFL Codes, and Altron AIML."
+    },
+    {
+      "questions": [
+        "when is the event",
+        "event dates",
+        "what are the dates",
+        "when will it happen"
+      ],
+      "answer": "Code Breaker Challenge 2.0 will be held on 10th - 11th October 2026."
+    },
+    {
+      "questions": [
+        "where is the venue",
+        "where will it be held",
+        "location of the event",
+        "venue address"
+      ],
+      "answer": "The event will be held at Global Academy of Technology, Ideal Homes Township, Rajarajeshwari Nagar, Bengaluru - 560098."
+    },
+    {
+      "questions": [
+        "what is the registration fee",
+        "how much does it cost",
+        "entry fee",
+        "price per team"
+      ],
+      "answer": "The registration fee is ₹1500/- per team."
+    },
+    {
+      "questions": [
+        "what is the team size",
+        "how many members per team",
+        "minimum and maximum team members"
+      ],
+      "answer": "Each team can have between 2 and 4 members."
+    },
+    {
+      "questions": [
+        "what is the prize money",
+        "cash prize",
+        "what can i win",
+        "cash pool"
+      ],
+      "answer": "There is a total cash pool of ₹60,000 (60K), along with certificates and internship opportunities for participants."
+    },
+    {
+      "questions": [
+        "how do i register",
+        "how to register",
+        "registration process",
+        "where do i sign up"
+      ],
+      "answer": "You can register by scanning the QR code on the official event poster. For help, reach out to the registration team listed under contacts."
+    },
+    {
+      "questions": [
+        "who is organizing the event",
+        "who is conducting this event",
+        "which department is organizing this"
+      ],
+      "answer": "The event is organized by the Department of Artificial Intelligence & Machine Learning at Global Academy of Technology (Autonomous), approved by AICTE New Delhi and affiliated to VTU."
+    },
+    {
+      "questions": [
+        "is there a website",
+        "official website",
+        "social media handles",
+        "instagram page",
+        "facebook page"
+      ],
+      "answer": "Website: https://cbc-2-xv2u.vercel.app/ | Instagram: gatbengaluru | Facebook: GlobalAcademyOfTech"
+    },
+    {
+      "questions": [
+        "who are the sponsors",
+        "who is supporting the event",
+        "collaboration partners"
+      ],
+      "answer": "CBC 2.0 is organized in collaboration with Dyashin, and is supported by IEEE Bangalore Section, IEEE Computer Society Bangalore Chapter, the Institution's Innovation Council, CTFL Codes, and Altron AIML."
+    }
+  ]
+}
