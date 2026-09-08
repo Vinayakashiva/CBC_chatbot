@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f2ea">
+  <title>CBC 2.0 · Participant Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app" id="app">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar" aria-label="CBC 2.0 participant menu">
+      <div class="sidebar__brand">
+        <img src="{{ url_for('static', filename='img/cbc2ologo.PNG') }}" alt="CBC 2.0" class="sidebar__logo">
+        <div>
+          <div class="sidebar__brand-name">CBC 2.0</div>
+          <div class="sidebar__brand-subtitle">Participant Assistant</div>
+        </div>
+      </div>
+
+      <button class="new-chat" id="newChatBtn" type="button">
+        <span class="new-chat__plus">+</span>
+        <span>New chat</span>
+      </button>
+
+      <nav class="sidebar__nav" id="sidebarNav">
+        <button class="nav-item is-active" data-action="home" type="button">
+          <span class="nav-item__icon">⌂</span><span>Ask Assistant</span>
+        </button>
+        <button class="nav-item" data-query="What are the event dates and schedule?" type="button">
+          <span class="nav-item__icon">◷</span><span>Schedule</span>
+        </button>
+        <button class="nav-item" data-query="What are the registration details and fees?" type="button">
+          <span class="nav-item__icon">◎</span><span>Registration</span>
+        </button>
+        <button class="nav-item" data-query="What are the rules and regulations?" type="button">
+          <span class="nav-item__icon">▤</span><span>Rules &amp; Guidelines</span>
+        </button>
+        <button class="nav-item" data-query="Where is the event venue? Please provide the location and Google Maps link." type="button">
+          <span class="nav-item__icon">⌖</span><span>Venue &amp; Location</span>
+        </button>
+        <button class="nav-item" data-query="Please give me the official CBC 2.0 website or registration link." type="button">
+          <span class="nav-item__icon">↗</span><span>Official Website</span>
+        </button>
+        <button class="nav-item" data-query="Show the faculty core committee and core committee members." type="button">
+          <span class="nav-item__icon">◌</span><span>Committee</span>
+        </button>
+        <button class="nav-item" data-query="How can I contact the event organizers?" type="button">
+          <span class="nav-item__icon">○</span><span>Contact Team</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="sidebar__footer-line"></div>
+        <div class="sidebar__footer-title">Participant support</div>
+        <div class="sidebar__footer-text">Ask naturally about anything related to CBC 2.0.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="icon-button mobile-only" id="sidebarToggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+        <div class="topbar__identity">
+          <span class="topbar__title">CBC 2.0</span>
+          <span class="topbar__separator">·</span>
+          <span class="topbar__subtitle">Participant Assistant</span>
+        </div>
+        <div class="topbar__right">
+          <span class="online-status"><span class="status-dot"></span> Online</span>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark theme" title="Toggle theme">◐</button>
+        </div>
+      </header>
+
+      <section class="welcome" id="welcomeView">
+        <img src="{{ url_for('static', filename='img/gatlockuplogo.png') }}" alt="Global Academy of Technology" class="corner-logo corner-logo--left">
+        <img src="{{ url_for('static', filename='img/aimldeptlogo.png') }}" alt="Department of Artificial Intelligence and Machine Learning" class="corner-logo corner-logo--right">
+
+        <div class="welcome__content">
+          <div class="event-logo">
+            <img src="{{ url_for('static', filename='img/cbc2ologo.PNG') }}" alt="CBC 2.0">
+          </div>
+          <div class="welcome__eyebrow">CODE BREAKER CHALLENGE 2.0</div>
+          <h1><span id="greetingWord">Good evening</span>, participant.</h1>
+          <p class="welcome__sub">How can I help you today?</p>
+          <p class="welcome__support">Ask about registration, rules, schedule, venue, website, committee, prizes, or any participant question.</p>
+
+          <form class="composer composer--hero" id="composerWelcome">
+            <input type="text" id="inputWelcome" placeholder="Ask anything about CBC 2.0..." autocomplete="off" aria-label="Ask CBC 2.0 Assistant">
+            <button type="submit" aria-label="Send message">↑</button>
+          </form>
+
+          <div class="quick-actions" id="quickActions">
+            <button class="quick-chip" data-query="What are the event dates and schedule?" type="button">Schedule</button>
+            <button class="quick-chip" data-query="What are the registration details and fees?" type="button">Registration</button>
+            <button class="quick-chip" data-query="What are the rules and regulations?" type="button">Rules</button>
+            <button class="quick-chip" data-query="Where is the event venue? Please provide the location and Google Maps link." type="button">Venue &amp; location</button>
+            <button class="quick-chip" data-query="Please give me the official CBC 2.0 website or registration link." type="button">Official website</button>
+            <button class="quick-chip" data-query="Show the faculty core committee and core committee members." type="button">Committee</button>
+          </div>
+
+          <div class="welcome__fineprint">AI can make mistakes. Please verify important event details with the organizers.</div>
+        </div>
+      </section>
+
+      <section class="chat-view" id="chatView" hidden>
+        <div class="thread" id="thread" aria-live="polite"></div>
+      </section>
+
+      <form class="composer composer--fixed" id="composerBottom" hidden>
+        <input type="text" id="inputBottom" placeholder="Ask anything about CBC 2.0..." autocomplete="off" aria-label="Message CBC 2.0 Assistant">
+        <button type="submit" aria-label="Send message">↑</button>
+      </form>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>
